@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: feed.proto
+// source: expense.proto
 
 package expensev1
 
@@ -57,11 +57,11 @@ func (x HealthCheckResponse_ServingStatus) String() string {
 }
 
 func (HealthCheckResponse_ServingStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_feed_proto_enumTypes[0].Descriptor()
+	return file_expense_proto_enumTypes[0].Descriptor()
 }
 
 func (HealthCheckResponse_ServingStatus) Type() protoreflect.EnumType {
-	return &file_feed_proto_enumTypes[0]
+	return &file_expense_proto_enumTypes[0]
 }
 
 func (x HealthCheckResponse_ServingStatus) Number() protoreflect.EnumNumber {
@@ -70,7 +70,7 @@ func (x HealthCheckResponse_ServingStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HealthCheckResponse_ServingStatus.Descriptor instead.
 func (HealthCheckResponse_ServingStatus) EnumDescriptor() ([]byte, []int) {
-	return file_feed_proto_rawDescGZIP(), []int{1, 0}
+	return file_expense_proto_rawDescGZIP(), []int{1, 0}
 }
 
 // HealthCheckRequest is the request for health check
@@ -83,7 +83,7 @@ type HealthCheckRequest struct {
 
 func (x *HealthCheckRequest) Reset() {
 	*x = HealthCheckRequest{}
-	mi := &file_feed_proto_msgTypes[0]
+	mi := &file_expense_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -95,7 +95,7 @@ func (x *HealthCheckRequest) String() string {
 func (*HealthCheckRequest) ProtoMessage() {}
 
 func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_proto_msgTypes[0]
+	mi := &file_expense_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -108,7 +108,7 @@ func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
 func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
-	return file_feed_proto_rawDescGZIP(), []int{0}
+	return file_expense_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HealthCheckRequest) GetService() string {
@@ -128,7 +128,7 @@ type HealthCheckResponse struct {
 
 func (x *HealthCheckResponse) Reset() {
 	*x = HealthCheckResponse{}
-	mi := &file_feed_proto_msgTypes[1]
+	mi := &file_expense_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -140,7 +140,7 @@ func (x *HealthCheckResponse) String() string {
 func (*HealthCheckResponse) ProtoMessage() {}
 
 func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_proto_msgTypes[1]
+	mi := &file_expense_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -153,7 +153,7 @@ func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
 func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
-	return file_feed_proto_rawDescGZIP(), []int{1}
+	return file_expense_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *HealthCheckResponse) GetStatus() HealthCheckResponse_ServingStatus {
@@ -163,12 +163,11 @@ func (x *HealthCheckResponse) GetStatus() HealthCheckResponse_ServingStatus {
 	return HealthCheckResponse_UNKNOWN
 }
 
-var File_feed_proto protoreflect.FileDescriptor
+var File_expense_proto protoreflect.FileDescriptor
 
-const file_feed_proto_rawDesc = "" +
+const file_expense_proto_rawDesc = "" +
 	"\n" +
-	"\n" +
-	"feed.proto\x12\n" +
+	"\rexpense.proto\x12\n" +
 	"expense.v1\".\n" +
 	"\x12HealthCheckRequest\x12\x18\n" +
 	"\aservice\x18\x01 \x01(\tR\aservice\"\xad\x01\n" +
@@ -180,31 +179,31 @@ const file_feed_proto_rawDesc = "" +
 	"\vNOT_SERVING\x10\x02\x12\x13\n" +
 	"\x0fSERVICE_UNKNOWN\x10\x032`\n" +
 	"\x0eExpenseService\x12N\n" +
-	"\vHealthCheck\x12\x1e.expense.v1.HealthCheckRequest\x1a\x1f.expense.v1.HealthCheckResponseB\xa0\x01\n" +
-	"\x0ecom.expense.v1B\tFeedProtoP\x01Z:github.com/boykush/famoney/server/expense/gen/go;expensev1\xa2\x02\x03EXX\xaa\x02\n" +
+	"\vHealthCheck\x12\x1e.expense.v1.HealthCheckRequest\x1a\x1f.expense.v1.HealthCheckResponseB\xa3\x01\n" +
+	"\x0ecom.expense.v1B\fExpenseProtoP\x01Z:github.com/boykush/famoney/server/expense/gen/go;expensev1\xa2\x02\x03EXX\xaa\x02\n" +
 	"Expense.V1\xca\x02\n" +
 	"Expense\\V1\xe2\x02\x16Expense\\V1\\GPBMetadata\xea\x02\vExpense::V1b\x06proto3"
 
 var (
-	file_feed_proto_rawDescOnce sync.Once
-	file_feed_proto_rawDescData []byte
+	file_expense_proto_rawDescOnce sync.Once
+	file_expense_proto_rawDescData []byte
 )
 
-func file_feed_proto_rawDescGZIP() []byte {
-	file_feed_proto_rawDescOnce.Do(func() {
-		file_feed_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_feed_proto_rawDesc), len(file_feed_proto_rawDesc)))
+func file_expense_proto_rawDescGZIP() []byte {
+	file_expense_proto_rawDescOnce.Do(func() {
+		file_expense_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_expense_proto_rawDesc), len(file_expense_proto_rawDesc)))
 	})
-	return file_feed_proto_rawDescData
+	return file_expense_proto_rawDescData
 }
 
-var file_feed_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_feed_proto_goTypes = []any{
+var file_expense_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_expense_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_expense_proto_goTypes = []any{
 	(HealthCheckResponse_ServingStatus)(0), // 0: expense.v1.HealthCheckResponse.ServingStatus
 	(*HealthCheckRequest)(nil),             // 1: expense.v1.HealthCheckRequest
 	(*HealthCheckResponse)(nil),            // 2: expense.v1.HealthCheckResponse
 }
-var file_feed_proto_depIdxs = []int32{
+var file_expense_proto_depIdxs = []int32{
 	0, // 0: expense.v1.HealthCheckResponse.status:type_name -> expense.v1.HealthCheckResponse.ServingStatus
 	1, // 1: expense.v1.ExpenseService.HealthCheck:input_type -> expense.v1.HealthCheckRequest
 	2, // 2: expense.v1.ExpenseService.HealthCheck:output_type -> expense.v1.HealthCheckResponse
@@ -215,27 +214,27 @@ var file_feed_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_feed_proto_init() }
-func file_feed_proto_init() {
-	if File_feed_proto != nil {
+func init() { file_expense_proto_init() }
+func file_expense_proto_init() {
+	if File_expense_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_feed_proto_rawDesc), len(file_feed_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_expense_proto_rawDesc), len(file_expense_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_feed_proto_goTypes,
-		DependencyIndexes: file_feed_proto_depIdxs,
-		EnumInfos:         file_feed_proto_enumTypes,
-		MessageInfos:      file_feed_proto_msgTypes,
+		GoTypes:           file_expense_proto_goTypes,
+		DependencyIndexes: file_expense_proto_depIdxs,
+		EnumInfos:         file_expense_proto_enumTypes,
+		MessageInfos:      file_expense_proto_msgTypes,
 	}.Build()
-	File_feed_proto = out.File
-	file_feed_proto_goTypes = nil
-	file_feed_proto_depIdxs = nil
+	File_expense_proto = out.File
+	file_expense_proto_goTypes = nil
+	file_expense_proto_depIdxs = nil
 }
