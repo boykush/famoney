@@ -9,4 +9,4 @@ resources:
 images:
 - name: web-service
   newName: ghcr.io/boykush/famoney/web-service
-  newTag: e468a3d
+  newTag: 02c5e0c

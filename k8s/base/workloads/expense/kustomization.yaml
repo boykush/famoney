@@ -10,7 +10,7 @@ resources:
 images:
 - name: expense-migration
   newName: ghcr.io/boykush/famoney/expense-migration
-  newTag: 77adb02
+  newTag: 02c5e0c
 - name: expense-service
   newName: ghcr.io/boykush/famoney/expense-service
-  newTag: 77adb02
+  newTag: 02c5e0c
