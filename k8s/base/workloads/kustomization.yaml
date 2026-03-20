@@ -6,5 +6,6 @@ resources:
   - bff
   - expense
   - web
+  - keycloak
   - istio
   - postgres

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: keycloak
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:26.1.4
+        args:
+        - start-dev
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_URL
+          value: jdbc:postgresql://postgres-rw:5432/keycloak_db
+        - name: KC_DB_USERNAME
+          value: famoney
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-user-secret
+              key: password
+        - name: KC_HOSTNAME_STRICT
+          value: "false"
+        - name: KC_PROXY_HEADERS
+          value: xforwarded
+        - name: KC_HTTP_ENABLED
+          value: "true"
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-admin-secret
+              key: username
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-admin-secret
+              key: password

@@ -5,4 +5,5 @@ resources:
   - gateway.yaml
   - virtualservice-bff.yaml
   - virtualservice-web.yaml
+  - virtualservice-keycloak.yaml
   - peerauthentication.yaml

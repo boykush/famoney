@@ -10,6 +10,8 @@ spec:
     initdb:
       database: expense_db
       owner: famoney
+      postInitSQL:
+      - CREATE DATABASE keycloak_db OWNER famoney
   managed:
     roles:
     - name: famoney
