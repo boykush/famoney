@@ -19,6 +19,7 @@ import (
 // ProvideHTTPServer creates and starts an HTTP server with gRPC-Gateway handlers.
 func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 	cfg := do.MustInvoke[Config](i)
+	oidcVerifier := do.MustInvoke[*OIDCVerifier](i)
 
 	ctx := context.Background()
 
@@ -31,7 +32,7 @@ func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 
 	httpServer := &http.Server{
 		Addr:              fmt.Sprintf(":%s", cfg.HTTPPort),
-		Handler:           mux,
+		Handler:           oidcVerifier.Middleware(mux),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
