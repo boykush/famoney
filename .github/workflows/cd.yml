@@ -7,6 +7,7 @@ on:
     paths:
       - 'server/**'
       - 'web/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -16,9 +17,9 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      bff: ${{ steps.filter.outputs.bff }}
-      expense: ${{ steps.filter.outputs.expense }}
-      web: ${{ steps.filter.outputs.web }}
+      bff: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.bff }}
+      expense: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.expense }}
+      web: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.web }}
       sha_short: ${{ steps.sha.outputs.short }}
     steps:
       - uses: actions/checkout@v4
