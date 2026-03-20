@@ -28,7 +28,5 @@ spec:
         env:
         - name: BFF_HTTP_PORT
           value: "8080"
-        - name: FEED_SERVICE_ADDR
-          value: "feed-service:50052"
-        - name: COLLECTOR_SERVICE_ADDR
-          value: "collector-service:50053"
+        - name: EXPENSE_SERVICE_ADDR
+          value: "expense-service:50052"

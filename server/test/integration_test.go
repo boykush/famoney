@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -38,7 +37,7 @@ func TestIntegration(t *testing.T) {
 
 	// 1. Start PostgreSQL container
 	pgContainer, err := postgres.Run(ctx, "postgres:16-alpine",
-		postgres.WithDatabase("collector_test"),
+		postgres.WithDatabase("expense_test"),
 		postgres.WithUsername("test"),
 		postgres.WithPassword("test"),
 		testcontainers.WithWaitStrategy(
@@ -52,76 +51,46 @@ func TestIntegration(t *testing.T) {
 	}
 	t.Cleanup(func() { pgContainer.Terminate(ctx) })
 
-	collectorDBURL, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	expenseDBURL, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
 	if err != nil {
 		t.Fatalf("failed to get connection string: %v", err)
 	}
 
-	// Create feed_test database for feed service
-	feedDBURL := createDatabase(t, collectorDBURL, "feed_test")
-
 	// 2. Run Atlas migrations
-	collectorMigrationsDir := filepath.Join(projectRoot, "server/collector/migrations")
+	expenseMigrationsDir := filepath.Join(projectRoot, "server/expense/migrations")
 	atlasCmd := exec.Command("mise", "exec", "--", "atlas", "migrate", "apply",
-		"--dir", fmt.Sprintf("file://%s", collectorMigrationsDir),
-		"--url", collectorDBURL,
+		"--dir", fmt.Sprintf("file://%s", expenseMigrationsDir),
+		"--url", expenseDBURL,
 	)
 	atlasCmd.Dir = projectRoot
 	atlasCmd.Stdout = os.Stdout
 	atlasCmd.Stderr = os.Stderr
 	if err := atlasCmd.Run(); err != nil {
-		t.Fatalf("failed to run collector atlas migrations: %v", err)
-	}
-
-	feedMigrationsDir := filepath.Join(projectRoot, "server/feed/migrations")
-	feedAtlasCmd := exec.Command("mise", "exec", "--", "atlas", "migrate", "apply",
-		"--dir", fmt.Sprintf("file://%s", feedMigrationsDir),
-		"--url", feedDBURL,
-	)
-	feedAtlasCmd.Dir = projectRoot
-	feedAtlasCmd.Stdout = os.Stdout
-	feedAtlasCmd.Stderr = os.Stderr
-	if err := feedAtlasCmd.Run(); err != nil {
-		t.Fatalf("failed to run feed atlas migrations: %v", err)
+		t.Fatalf("failed to run expense atlas migrations: %v", err)
 	}
 
 	// 3. Start services using free ports to avoid conflicts
-	feedPort := freePort(t)
-	collectorPort := freePort(t)
+	expensePort := freePort(t)
 	bffPort := freePort(t)
 
-	// Start feed service
-	feedCmd := exec.Command(filepath.Join(projectRoot, "server/feed/bin/server"))
-	feedCmd.Env = append(os.Environ(),
-		fmt.Sprintf("FEED_SERVICE_PORT=%s", feedPort),
-		fmt.Sprintf("DATABASE_URL=%s", feedDBURL),
+	// Start expense service
+	expenseCmd := exec.Command(filepath.Join(projectRoot, "server/expense/bin/server"))
+	expenseCmd.Env = append(os.Environ(),
+		fmt.Sprintf("EXPENSE_SERVICE_PORT=%s", expensePort),
+		fmt.Sprintf("DATABASE_URL=%s", expenseDBURL),
 	)
-	feedCmd.Stdout = os.Stdout
-	feedCmd.Stderr = os.Stderr
-	if err := feedCmd.Start(); err != nil {
-		t.Fatalf("failed to start feed service: %v", err)
+	expenseCmd.Stdout = os.Stdout
+	expenseCmd.Stderr = os.Stderr
+	if err := expenseCmd.Start(); err != nil {
+		t.Fatalf("failed to start expense service: %v", err)
 	}
-	t.Cleanup(func() { feedCmd.Process.Kill(); feedCmd.Wait() })
-
-	// Start collector service
-	collectorCmd := exec.Command(filepath.Join(projectRoot, "server/collector/bin/server"))
-	collectorCmd.Env = append(os.Environ(),
-		fmt.Sprintf("COLLECTOR_SERVICE_PORT=%s", collectorPort),
-		fmt.Sprintf("DATABASE_URL=%s", collectorDBURL),
-	)
-	collectorCmd.Stdout = os.Stdout
-	collectorCmd.Stderr = os.Stderr
-	if err := collectorCmd.Start(); err != nil {
-		t.Fatalf("failed to start collector service: %v", err)
-	}
-	t.Cleanup(func() { collectorCmd.Process.Kill(); collectorCmd.Wait() })
+	t.Cleanup(func() { expenseCmd.Process.Kill(); expenseCmd.Wait() })
 
 	// Start BFF service
 	bffCmd := exec.Command(filepath.Join(projectRoot, "server/bff/bin/server"))
 	bffCmd.Env = append(os.Environ(),
 		fmt.Sprintf("BFF_HTTP_PORT=%s", bffPort),
-		fmt.Sprintf("FEED_SERVICE_ADDR=localhost:%s", feedPort),
-		fmt.Sprintf("COLLECTOR_SERVICE_ADDR=localhost:%s", collectorPort),
+		fmt.Sprintf("EXPENSE_SERVICE_ADDR=localhost:%s", expensePort),
 	)
 	bffCmd.Stdout = os.Stdout
 	bffCmd.Stderr = os.Stderr
@@ -131,18 +100,15 @@ func TestIntegration(t *testing.T) {
 	t.Cleanup(func() { bffCmd.Process.Kill(); bffCmd.Wait() })
 
 	// 4. Wait for BFF health
-	healthURL := fmt.Sprintf("http://localhost:%s/api/v1/feeds/health", bffPort)
+	healthURL := fmt.Sprintf("http://localhost:%s/api/v1/expenses/health", bffPort)
 	waitForHealth(t, healthURL, 30*time.Second)
 
 	// 5. Run hurl tests
 	hurlCmd := exec.Command("mise", "exec", "--", "hurl",
 		"--variable", fmt.Sprintf("bff_port=%s", bffPort),
 		"--test",
-		filepath.Join(projectRoot, "server/test/collector_health.hurl"),
-		filepath.Join(projectRoot, "server/test/collector_operations.hurl"),
-		filepath.Join(projectRoot, "server/test/feed_health.hurl"),
-		filepath.Join(projectRoot, "server/test/feed_operations.hurl"),
-		filepath.Join(projectRoot, "server/test/feed_list.hurl"),
+		filepath.Join(projectRoot, "server/test/expense_health.hurl"),
+		filepath.Join(projectRoot, "server/test/expense_operations.hurl"),
 	)
 	hurlCmd.Dir = projectRoot
 	hurlCmd.Stdout = os.Stdout
@@ -150,23 +116,6 @@ func TestIntegration(t *testing.T) {
 	if err := hurlCmd.Run(); err != nil {
 		t.Fatalf("hurl tests failed: %v", err)
 	}
-}
-
-func createDatabase(t *testing.T, baseURL, dbName string) string {
-	t.Helper()
-
-	db, err := sql.Open("postgres", baseURL)
-	if err != nil {
-		t.Fatalf("failed to connect to postgres: %v", err)
-	}
-	defer db.Close()
-
-	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", dbName))
-	if err != nil {
-		t.Fatalf("failed to create database %s: %v", dbName, err)
-	}
-
-	return replaceDBName(baseURL, dbName)
 }
 
 func replaceDBName(connStr, newDB string) string {

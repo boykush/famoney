@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Build collector service"
-#MISE depends=["proto:generate:collector"]
-#MISE dir="server/collector"
-go build -o bin/server ./cmd/server

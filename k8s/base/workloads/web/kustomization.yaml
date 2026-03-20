@@ -8,5 +8,5 @@ resources:
 - authorizationpolicy.yaml
 images:
 - name: web-service
-  newName: ghcr.io/boykush/feedhub/web-service
+  newName: ghcr.io/boykush/famoney/web-service
   newTag: e468a3d

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Format expense service code"
+#MISE dir="server/expense"
+go fmt ./...

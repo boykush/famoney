@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Format feed service code"
-#MISE dir="server/feed"
-go fmt ./...

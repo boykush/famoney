@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Lint expense service code"
+#MISE dir="server/expense"
+golangci-lint run ./...

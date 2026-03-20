@@ -8,10 +8,8 @@ serverのAPI（BFF grpc-gatewayが公開するRESTエンドポイント）を修
 
 ```
 server/test/
-├── feed_health.hurl          # Feed HealthCheck
-├── feed_list.hurl             # ListFeeds / ListArticles
-├── collector_health.hurl      # Collector HealthCheck
-└── collector_operations.hurl  # AddFeed / SyncFeeds
+├── expense_health.hurl          # Expense HealthCheck
+└── expense_operations.hurl      # Expense Operations
 ```
 
 ### テスト実行

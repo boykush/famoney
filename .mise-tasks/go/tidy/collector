@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run go mod tidy for collector service"
-#MISE dir="server/collector"
-go mod tidy

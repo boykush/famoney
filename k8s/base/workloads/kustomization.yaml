@@ -4,8 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - bff
-  - feed
-  - collector
+  - expense
   - web
   - istio
   - postgres

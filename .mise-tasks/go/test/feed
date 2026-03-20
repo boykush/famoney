@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run tests for feed service"
-#MISE dir="server/feed"
-go test ./...

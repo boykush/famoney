@@ -6,7 +6,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/boykush/feedhub/server/bff/cmd/server/provider"
+	"github.com/boykush/famoney/server/bff/cmd/server/provider"
 	"github.com/caarlos0/env/v11"
 	"github.com/samber/do/v2"
 )

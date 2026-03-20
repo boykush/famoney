@@ -4,14 +4,13 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
 	const results = await Promise.all([
-		checkHealth("Feed Service", "/api/v1/feeds/health"),
-		checkHealth("Collector Service", "/api/v1/collector/health"),
+		checkHealth("Expense Service", "/api/v1/expenses/health"),
 	]);
 
 	return (
 		<div className="py-10">
 			<div className="text-center mb-10">
-				<h1 className="text-3xl font-bold mb-2">Feedhub - RSS Feed Reader</h1>
+				<h1 className="text-3xl font-bold mb-2">Famoney</h1>
 				<p className="text-gray-600">Service Health Status</p>
 			</div>
 

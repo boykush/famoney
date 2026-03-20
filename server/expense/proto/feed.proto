@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package expense.v1;
+
+option go_package = "github.com/boykush/famoney/server/expense/gen/go/expense/v1;expensev1";
+
+// HealthCheckRequest is the request for health check
+message HealthCheckRequest {
+  string service = 1;
+}
+
+// HealthCheckResponse is the response for health check
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+}
+
+// ExpenseService manages expense data
+service ExpenseService {
+  // HealthCheck checks if the service is healthy
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}

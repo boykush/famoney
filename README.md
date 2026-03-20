@@ -1,15 +1,14 @@
-# Feedhub
+# Famoney
 
-RSSフィードを収集・閲覧できる個人向けWebアプリケーション。マイクロサービスアーキテクチャで構築されています。
+支出を管理できる個人向けWebアプリケーション。マイクロサービスアーキテクチャで構築されています。
 
 ## プロジェクト構成
 
 ```
-feedhub/
+famoney/
 ├── server/            # バックエンドサービス群 (Go, gRPC)
 │   ├── bff/          # Backend for Frontend (gRPC Gateway)
-│   ├── feed/         # フィード読み取りサービス
-│   └── collector/    # RSS収集サービス
+│   └── expense/      # 支出管理サービス
 ├── web/              # フロントエンド (Next.js)
 ├── k8s/              # Kubernetesマニフェスト
 │   ├── base/         # ベースマニフェスト

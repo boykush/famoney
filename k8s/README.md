@@ -1,6 +1,6 @@
 # Kubernetes Manifests
 
-このディレクトリには、Feedhubアプリケーションのkubernetesマニフェストが含まれています。
+このディレクトリには、Famoneyアプリケーションのkubernetesマニフェストが含まれています。
 Kustomizeを使用した階層構造で管理しており、環境ごとのオーバーレイで設定を上書きできます。
 
 ## ディレクトリ構成
@@ -15,8 +15,7 @@ k8s/
 │   │   └── istiod/
 │   └── workloads/             # アプリケーション層
 │       ├── bff/
-│       ├── feed/
-│       ├── collector/
+│       ├── expense/
 │       ├── web/
 │       ├── postgres/
 │       └── istio/             # Istio設定（Gateway, VirtualService等）
@@ -35,7 +34,7 @@ k8s/
   - Istio: サービスメッシュ（istio-base, istiod, ingressgateway）
 
 - **workloads/**: アプリケーション層
-  - マイクロサービス（bff, feed, collector, web）
+  - マイクロサービス（bff, expense, web）
   - データベース（postgres - CloudNativePG）
   - Istio設定（Gateway, VirtualService, AuthorizationPolicy等）
 

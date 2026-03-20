@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Generate ent code for expense"
+#MISE dir="server/expense"
+
+go generate ./internal/infra/ent

@@ -9,7 +9,7 @@ patches:
     target:
       kind: Application
       name: istio-ingressgateway
-  - path: feedhub/application-patch.yaml
+  - path: famoney/application-patch.yaml
     target:
       kind: Application
-      name: feedhub
+      name: famoney

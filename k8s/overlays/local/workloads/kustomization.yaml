@@ -7,4 +7,4 @@ patches:
   - path: istio/gateway-patch.yaml
     target:
       kind: Gateway
-      name: feedhub-gateway
+      name: famoney-gateway

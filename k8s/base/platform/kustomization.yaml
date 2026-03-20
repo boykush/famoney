@@ -6,5 +6,5 @@ resources:
   - istio-base/application.yaml
   - istiod/application.yaml
   - istio-ingressgateway
-  - feedhub/application.yaml
+  - famoney/application.yaml
   - cloudnative-pg/application.yaml

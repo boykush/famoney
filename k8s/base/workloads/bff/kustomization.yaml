@@ -8,5 +8,5 @@ resources:
 - authorizationpolicy.yaml
 images:
 - name: bff-service
-  newName: ghcr.io/boykush/feedhub/bff-service
+  newName: ghcr.io/boykush/famoney/bff-service
   newTag: e468a3d

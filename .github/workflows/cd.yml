@@ -17,8 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       bff: ${{ steps.filter.outputs.bff }}
-      feed: ${{ steps.filter.outputs.feed }}
-      collector: ${{ steps.filter.outputs.collector }}
+      expense: ${{ steps.filter.outputs.expense }}
       web: ${{ steps.filter.outputs.web }}
       sha_short: ${{ steps.sha.outputs.short }}
     steps:
@@ -30,10 +29,8 @@ jobs:
           filters: |
             bff:
               - 'server/bff/**'
-            feed:
-              - 'server/feed/**'
-            collector:
-              - 'server/collector/**'
+            expense:
+              - 'server/expense/**'
             web:
               - 'web/**'
 
@@ -51,22 +48,14 @@ jobs:
             context: server/bff
             dockerfile: server/bff/Dockerfile
             changed: ${{ needs.changes.outputs.bff }}
-          - service: feed-service
-            context: server/feed
-            dockerfile: server/feed/Dockerfile
-            changed: ${{ needs.changes.outputs.feed }}
-          - service: feed-migration
-            context: server/feed
-            dockerfile: server/feed/Dockerfile.migrate
-            changed: ${{ needs.changes.outputs.feed }}
-          - service: collector-service
-            context: server/collector
-            dockerfile: server/collector/Dockerfile
-            changed: ${{ needs.changes.outputs.collector }}
-          - service: collector-migration
-            context: server/collector
-            dockerfile: server/collector/Dockerfile.migrate
-            changed: ${{ needs.changes.outputs.collector }}
+          - service: expense-service
+            context: server/expense
+            dockerfile: server/expense/Dockerfile
+            changed: ${{ needs.changes.outputs.expense }}
+          - service: expense-migration
+            context: server/expense
+            dockerfile: server/expense/Dockerfile.migrate
+            changed: ${{ needs.changes.outputs.expense }}
           - service: web-service
             context: web
             dockerfile: web/Dockerfile
@@ -113,19 +102,12 @@ jobs:
           cd k8s/base/workloads/bff
           kustomize edit set image bff-service=ghcr.io/${{ github.repository }}/bff-service:${{ needs.changes.outputs.sha_short }}
 
-      - name: Update Feed images
-        if: needs.changes.outputs.feed == 'true'
+      - name: Update Expense images
+        if: needs.changes.outputs.expense == 'true'
         run: |
-          cd k8s/base/workloads/feed
-          kustomize edit set image feed-service=ghcr.io/${{ github.repository }}/feed-service:${{ needs.changes.outputs.sha_short }}
-          kustomize edit set image feed-migration=ghcr.io/${{ github.repository }}/feed-migration:${{ needs.changes.outputs.sha_short }}
-
-      - name: Update Collector images
-        if: needs.changes.outputs.collector == 'true'
-        run: |
-          cd k8s/base/workloads/collector
-          kustomize edit set image collector-service=ghcr.io/${{ github.repository }}/collector-service:${{ needs.changes.outputs.sha_short }}
-          kustomize edit set image collector-migration=ghcr.io/${{ github.repository }}/collector-migration:${{ needs.changes.outputs.sha_short }}
+          cd k8s/base/workloads/expense
+          kustomize edit set image expense-service=ghcr.io/${{ github.repository }}/expense-service:${{ needs.changes.outputs.sha_short }}
+          kustomize edit set image expense-migration=ghcr.io/${{ github.repository }}/expense-migration:${{ needs.changes.outputs.sha_short }}
 
       - name: Update Web image
         if: needs.changes.outputs.web == 'true'

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-service
+  labels:
+    app: expense-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-service
+  template:
+    metadata:
+      labels:
+        app: expense-service
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: expense-service
+      containers:
+      - name: expense-service
+        image: expense-service:latest
+        ports:
+        - containerPort: 50052
+          name: grpc
+          protocol: TCP
+        env:
+        - name: EXPENSE_SERVICE_PORT
+          value: "50052"
+        - name: DATABASE_URL
+          value: postgres://famoney:famoney-local-password@postgres-rw:5432/expense_db?sslmode=disable

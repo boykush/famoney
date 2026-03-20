@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build expense service"
+#MISE depends=["proto:generate:expense"]
+#MISE dir="server/expense"
+go build -o bin/server ./cmd/server

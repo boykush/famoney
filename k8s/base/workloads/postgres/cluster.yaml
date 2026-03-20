@@ -8,13 +8,11 @@ spec:
     size: 1Gi
   bootstrap:
     initdb:
-      database: collector_db
-      owner: feedhub
-      postInitSQL:
-        - CREATE DATABASE feed_db OWNER feedhub
+      database: expense_db
+      owner: famoney
   managed:
     roles:
-    - name: feedhub
+    - name: famoney
       login: true
       passwordSecret:
         name: postgres-user-secret

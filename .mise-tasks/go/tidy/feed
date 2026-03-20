@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run go mod tidy for feed service"
-#MISE dir="server/feed"
-go mod tidy

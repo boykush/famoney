@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #MISE description="Create kind cluster for local development"
 
-cat <<EOF | kind create cluster --name feedhub --config=-
+cat <<EOF | kind create cluster --name famoney --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:

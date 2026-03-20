@@ -3,7 +3,7 @@
 
 set -e
 
-if ! kind get clusters 2>/dev/null | grep -q '^feedhub$'; then
+if ! kind get clusters 2>/dev/null | grep -q '^famoney$'; then
   mise run k8s:local:cluster:create
 fi
 mise run k8s:local:deploy-platform

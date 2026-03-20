@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Generate proto code for expense service"
+#MISE dir="server/expense"
+buf generate

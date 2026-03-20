@@ -8,7 +8,7 @@ managed:
       module: buf.build/grpc/grpc
   override:
     - file_option: go_package_prefix
-      value: github.com/boykush/feedhub/server/bff/gen/go
+      value: github.com/boykush/famoney/server/bff/gen/go
 plugins:
   # Generate Go Protocol Buffers code
   - remote: buf.build/protocolbuffers/go

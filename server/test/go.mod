@@ -1,4 +1,4 @@
-module github.com/boykush/feedhub/server/test
+module github.com/boykush/famoney/server/test
 
 go 1.25.5
 

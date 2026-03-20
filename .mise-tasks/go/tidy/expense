@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run go mod tidy for expense service"
+#MISE dir="server/expense"
+go mod tidy

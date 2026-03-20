@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Generate ent code for feed"
-#MISE dir="server/feed"
-
-go generate ./internal/infra/ent

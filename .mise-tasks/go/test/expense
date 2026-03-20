@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run tests for expense service"
+#MISE dir="server/expense"
+go test ./...

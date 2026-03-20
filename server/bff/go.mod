@@ -1,4 +1,4 @@
-module github.com/boykush/feedhub/server/bff
+module github.com/boykush/famoney/server/bff
 
 go 1.25.5
 

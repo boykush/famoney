@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Format collector service code"
-#MISE dir="server/collector"
-go fmt ./...

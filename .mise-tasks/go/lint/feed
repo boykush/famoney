@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Lint feed service code"
-#MISE dir="server/feed"
-golangci-lint run ./...

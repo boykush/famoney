@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Feedhub",
-	description: "Personal RSS feed reader",
+	title: "Famoney",
+	description: "Personal expense management app",
 };
 
 export default function RootLayout({
@@ -18,13 +18,7 @@ export default function RootLayout({
 					<div className="max-w-4xl mx-auto px-4 py-4">
 						<nav className="flex items-center gap-6">
 							<a href="/" className="text-xl font-bold text-blue-600">
-								Feedhub
-							</a>
-							<a
-								href="/feeds/add"
-								className="text-sm text-gray-600 hover:text-gray-900"
-							>
-								Add Feed
+								Famoney
 							</a>
 						</nav>
 					</div>

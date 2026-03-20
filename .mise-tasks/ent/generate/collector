@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Generate ent code for collector"
-#MISE dir="server/collector"
-
-go generate ./internal/infra/ent

@@ -13,8 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	collectorpb "github.com/boykush/feedhub/server/bff/gen/go/collector"
-	feedpb "github.com/boykush/feedhub/server/bff/gen/go/feed"
+	expensepb "github.com/boykush/famoney/server/bff/gen/go/expense"
 )
 
 // ProvideHTTPServer creates and starts an HTTP server with gRPC-Gateway handlers.
@@ -26,12 +25,8 @@ func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	if err := feedpb.RegisterFeedServiceHandlerFromEndpoint(ctx, mux, cfg.FeedServiceAddr, opts); err != nil {
-		return nil, fmt.Errorf("failed to register feed service handler: %w", err)
-	}
-
-	if err := collectorpb.RegisterCollectorServiceHandlerFromEndpoint(ctx, mux, cfg.CollectorServiceAddr, opts); err != nil {
-		return nil, fmt.Errorf("failed to register collector service handler: %w", err)
+	if err := expensepb.RegisterExpenseServiceHandlerFromEndpoint(ctx, mux, cfg.ExpenseServiceAddr, opts); err != nil {
+		return nil, fmt.Errorf("failed to register expense service handler: %w", err)
 	}
 
 	httpServer := &http.Server{
