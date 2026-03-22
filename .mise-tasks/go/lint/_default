@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #MISE description="Lint all Go services"
 
-mise run go:lint:expense && mise run go:lint:bff
+mise run go:lint:expense && mise run go:lint:family && mise run go:lint:bff

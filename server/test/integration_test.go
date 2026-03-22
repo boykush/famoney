@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -56,6 +57,18 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("failed to get connection string: %v", err)
 	}
 
+	// Create family_test database using lib/pq
+	baseConnStr := replaceDBName(expenseDBURL, "postgres")
+	db, err := sql.Open("postgres", baseConnStr)
+	if err != nil {
+		t.Fatalf("failed to connect to postgres: %v", err)
+	}
+	if _, err := db.ExecContext(ctx, "CREATE DATABASE family_test"); err != nil {
+		t.Fatalf("failed to create family_test database: %v", err)
+	}
+	db.Close()
+	familyDBURL := replaceDBName(expenseDBURL, "family_test")
+
 	// 2. Run Atlas migrations
 	expenseMigrationsDir := filepath.Join(projectRoot, "server/expense/migrations")
 	atlasCmd := exec.Command("mise", "exec", "--", "atlas", "migrate", "apply",
@@ -69,8 +82,21 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("failed to run expense atlas migrations: %v", err)
 	}
 
+	familyMigrationsDir := filepath.Join(projectRoot, "server/family/migrations")
+	familyAtlasCmd := exec.Command("mise", "exec", "--", "atlas", "migrate", "apply",
+		"--dir", fmt.Sprintf("file://%s", familyMigrationsDir),
+		"--url", familyDBURL,
+	)
+	familyAtlasCmd.Dir = projectRoot
+	familyAtlasCmd.Stdout = os.Stdout
+	familyAtlasCmd.Stderr = os.Stderr
+	if err := familyAtlasCmd.Run(); err != nil {
+		t.Fatalf("failed to run family atlas migrations: %v", err)
+	}
+
 	// 3. Start services using free ports to avoid conflicts
 	expensePort := freePort(t)
+	familyPort := freePort(t)
 	bffPort := freePort(t)
 
 	// Start expense service
@@ -86,11 +112,25 @@ func TestIntegration(t *testing.T) {
 	}
 	t.Cleanup(func() { expenseCmd.Process.Kill(); expenseCmd.Wait() })
 
+	// Start family service
+	familyCmd := exec.Command(filepath.Join(projectRoot, "server/family/bin/server"))
+	familyCmd.Env = append(os.Environ(),
+		fmt.Sprintf("FAMILY_SERVICE_PORT=%s", familyPort),
+		fmt.Sprintf("DATABASE_URL=%s", familyDBURL),
+	)
+	familyCmd.Stdout = os.Stdout
+	familyCmd.Stderr = os.Stderr
+	if err := familyCmd.Start(); err != nil {
+		t.Fatalf("failed to start family service: %v", err)
+	}
+	t.Cleanup(func() { familyCmd.Process.Kill(); familyCmd.Wait() })
+
 	// Start BFF service
 	bffCmd := exec.Command(filepath.Join(projectRoot, "server/bff/bin/server"))
 	bffCmd.Env = append(os.Environ(),
 		fmt.Sprintf("BFF_HTTP_PORT=%s", bffPort),
 		fmt.Sprintf("EXPENSE_SERVICE_ADDR=localhost:%s", expensePort),
+		fmt.Sprintf("FAMILY_SERVICE_ADDR=localhost:%s", familyPort),
 	)
 	bffCmd.Stdout = os.Stdout
 	bffCmd.Stderr = os.Stderr
@@ -100,7 +140,7 @@ func TestIntegration(t *testing.T) {
 	t.Cleanup(func() { bffCmd.Process.Kill(); bffCmd.Wait() })
 
 	// 4. Wait for BFF health
-	healthURL := fmt.Sprintf("http://localhost:%s/api/v1/expenses/health", bffPort)
+	healthURL := fmt.Sprintf("http://localhost:%s/api/v1/expense/health", bffPort)
 	waitForHealth(t, healthURL, 30*time.Second)
 
 	// 5. Run hurl tests
@@ -109,6 +149,7 @@ func TestIntegration(t *testing.T) {
 		"--test",
 		filepath.Join(projectRoot, "server/test/expense_health.hurl"),
 		filepath.Join(projectRoot, "server/test/expense_operations.hurl"),
+		filepath.Join(projectRoot, "server/test/family_health.hurl"),
 	)
 	hurlCmd.Dir = projectRoot
 	hurlCmd.Stdout = os.Stdout

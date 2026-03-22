@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Format family service code"
+#MISE dir="server/family"
+gofmt -w .

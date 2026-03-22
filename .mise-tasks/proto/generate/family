@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Generate proto code for family service"
+#MISE dir="server/family"
+buf generate
