@@ -1,0 +1,29 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: expense-db
+spec:
+  name: expense_db
+  owner: famoney
+  cluster:
+    name: postgres
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: family-db
+spec:
+  name: family_db
+  owner: famoney
+  cluster:
+    name: postgres
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: keycloak-db
+spec:
+  name: keycloak_db
+  owner: famoney
+  cluster:
+    name: postgres
