@@ -42,30 +42,16 @@ k8s/
 
 この分離により、プラットフォーム層とアプリケーション層を独立して管理できます。
 
-## 認証アーキテクチャ
+## 認証基盤（Keycloak）
 
-Keycloakをセルフホスト型のOIDC Identity Providerとして使用しています。
+認証アーキテクチャの概要は[README.md](../README.md#認証アーキテクチャ)を参照してください。
 
-```
-ブラウザ → Istio IngressGateway → BFF (go-oidc トークン検証) → expense サービス
-                                    ↕
-                                Keycloak (OIDC IdP)
-                                    ↕
-                                PostgreSQL (keycloak_db)
-```
+### K8sリソース構成
 
-### 構成要素
-
-- **Keycloak**: OIDC IdP。`famoney` realmと`famoney-bff`クライアントはConfigMap経由で起動時に自動インポート
-- **BFF**: [go-oidc](https://github.com/coreos/go-oidc)ミドルウェアでBearerトークンを検証。Keycloak未起動時はログ出力のみで起動し、認証エンドポイントは503を返す
-- **ユーザー管理**: Keycloak管理コンソールで手動登録
-
-### エンドポイントの認証
-
-| パス | 認証 |
-|------|------|
-| `*/health` | 不要 |
-| その他 | Bearerトークン必須（401/503） |
+- `keycloak/deployment.yaml`: Keycloak本体。`--import-realm`で起動時にrealm設定を自動インポート
+- `keycloak/realm-configmap.yaml`: `famoney` realmと`famoney-bff`クライアントのJSON定義
+- `keycloak/secret.yaml`: 管理コンソールのクレデンシャル
+- `postgres/cluster.yaml`: `keycloak_db`を`postInitSQL`で作成
 
 ### ローカルでのKeycloak管理コンソール
 
