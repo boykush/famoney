@@ -9,6 +9,7 @@ import (
 
 	familyv1 "github.com/boykush/famoney/server/family/gen/go"
 	"github.com/boykush/famoney/server/family/internal/server"
+	"github.com/boykush/famoney/server/family/internal/usecase"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -25,7 +26,8 @@ func (s *GRPCServer) Shutdown() error {
 
 // ProvideServer creates a new family gRPC service server.
 func ProvideServer(i do.Injector) (*server.Server, error) {
-	return server.NewServer(), nil
+	memberUsecase := do.MustInvoke[*usecase.MemberUsecase](i)
+	return server.NewServer(memberUsecase), nil
 }
 
 // ProvideGRPCServer creates and starts a gRPC server with the family service registered.
