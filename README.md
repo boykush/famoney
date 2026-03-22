@@ -21,6 +21,23 @@ famoney/
 - [web/README.md](web/README.md) - フロントエンドの開発ガイド
 - [k8s/README.md](k8s/README.md) - Kubernetesマニフェストの構成と管理
 
+## 認証アーキテクチャ
+
+Keycloakをセルフホスト型のOIDC Identity Providerとして使用しています。
+
+```
+ブラウザ → Istio IngressGateway → BFF (go-oidc トークン検証) → expense サービス
+                                    ↕
+                                Keycloak (OIDC IdP)
+                                    ↕
+                                PostgreSQL (keycloak_db)
+```
+
+- **Keycloak**: realm・クライアント設定はConfigMapで自動インポート。ユーザーは管理コンソールで手動登録
+- **BFF**: Bearerトークンを[go-oidc](https://github.com/coreos/go-oidc)で検証。`*/health`エンドポイントは認証不要
+
+詳細は[k8s/README.md](k8s/README.md#認証アーキテクチャ)を参照してください。
+
 ## 開発環境のセットアップ
 
 ### mise のインストール
