@@ -1,13 +1,13 @@
 # Famoney
 
-支出を管理できる個人向けWebアプリケーション。マイクロサービスアーキテクチャで構築されています。
+家族の共有支出を管理するWebアプリケーション。マイクロサービスアーキテクチャで構築されています。
 
 ## プロジェクト構成
 
 ```
 famoney/
 ├── server/            # バックエンドサービス群 (Go, gRPC)
-│   ├── bff/          # Backend for Frontend (gRPC Gateway)
+│   ├── bff/          # Backend for Frontend (gRPC Gateway + OIDC認証)
 │   └── expense/      # 支出管理サービス
 ├── web/              # フロントエンド (Next.js)
 ├── k8s/              # Kubernetesマニフェスト

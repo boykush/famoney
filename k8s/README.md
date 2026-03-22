@@ -17,6 +17,7 @@ k8s/
 │       ├── bff/
 │       ├── expense/
 │       ├── web/
+│       ├── keycloak/          # 認証基盤（OIDC IdP）
 │       ├── postgres/
 │       └── istio/             # Istio設定（Gateway, VirtualService等）
 └── overlays/                  # 環境別のオーバーレイ
@@ -35,10 +36,46 @@ k8s/
 
 - **workloads/**: アプリケーション層
   - マイクロサービス（bff, expense, web）
+  - 認証基盤（keycloak）
   - データベース（postgres - CloudNativePG）
   - Istio設定（Gateway, VirtualService, AuthorizationPolicy等）
 
 この分離により、プラットフォーム層とアプリケーション層を独立して管理できます。
+
+## 認証アーキテクチャ
+
+Keycloakをセルフホスト型のOIDC Identity Providerとして使用しています。
+
+```
+ブラウザ → Istio IngressGateway → BFF (go-oidc トークン検証) → expense サービス
+                                    ↕
+                                Keycloak (OIDC IdP)
+                                    ↕
+                                PostgreSQL (keycloak_db)
+```
+
+### 構成要素
+
+- **Keycloak**: OIDC IdP。`famoney` realmと`famoney-bff`クライアントはConfigMap経由で起動時に自動インポート
+- **BFF**: [go-oidc](https://github.com/coreos/go-oidc)ミドルウェアでBearerトークンを検証。Keycloak未起動時はログ出力のみで起動し、認証エンドポイントは503を返す
+- **ユーザー管理**: Keycloak管理コンソールで手動登録
+
+### エンドポイントの認証
+
+| パス | 認証 |
+|------|------|
+| `*/health` | 不要 |
+| その他 | Bearerトークン必須（401/503） |
+
+### ローカルでのKeycloak管理コンソール
+
+```bash
+# ポートフォワード
+kubectl port-forward svc/keycloak 8180:8080
+
+# http://localhost:8180 でアクセス
+# ユーザー: admin / パスワード: keycloak-admin-secret参照
+```
 
 ### Base vs Overlays
 
