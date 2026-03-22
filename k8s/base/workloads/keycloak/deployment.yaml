@@ -44,8 +44,6 @@ spec:
             secretKeyRef:
               name: postgres-user-secret
               key: password
-        - name: KC_HOSTNAME
-          value: "keycloak"
         - name: KC_HOSTNAME_STRICT
           value: "false"
         - name: KC_PROXY_HEADERS

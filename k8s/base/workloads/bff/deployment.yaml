@@ -31,6 +31,6 @@ spec:
         - name: EXPENSE_SERVICE_ADDR
           value: "expense-service:50052"
         - name: OIDC_ISSUER_URL
-          value: "http://keycloak/realms/famoney"
+          value: "http://keycloak:8080/realms/famoney"
         - name: OIDC_CLIENT_ID
           value: "famoney-bff"
