@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: family-service
+  labels:
+    app: family-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: family-service
+  template:
+    metadata:
+      labels:
+        app: family-service
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: family-service
+      containers:
+      - name: family-service
+        image: family-service:latest
+        ports:
+        - containerPort: 50053
+          name: grpc
+          protocol: TCP
+        env:
+        - name: FAMILY_SERVICE_PORT
+          value: "50053"
+        - name: DATABASE_URL
+          value: postgres://famoney:famoney-local-password@postgres-rw:5432/family_db?sslmode=disable

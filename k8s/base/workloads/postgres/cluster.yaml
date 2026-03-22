@@ -11,6 +11,7 @@ spec:
       database: expense_db
       owner: famoney
       postInitSQL:
+      - CREATE DATABASE family_db OWNER famoney
       - CREATE DATABASE keycloak_db OWNER famoney
   managed:
     roles:

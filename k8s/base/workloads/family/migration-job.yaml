@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: family-migration
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+        proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: postgres:16-alpine
+        command: ['sh', '-c', 'until pg_isready -h postgres-rw -p 5432 -U famoney; do echo "waiting for postgres..."; sleep 2; done']
+      containers:
+      - name: migrate
+        image: family-migration:latest
+        env:
+        - name: DATABASE_URL
+          value: postgres://famoney:famoney-local-password@postgres-rw:5432/family_db?sslmode=disable
+      restartPolicy: Never
+  backoffLimit: 3

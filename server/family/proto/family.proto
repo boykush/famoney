@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package family.v1;
+
+option go_package = "github.com/boykush/famoney/server/family/gen/go/family/v1;familyv1";
+
+// HealthCheckRequest is the request for health check
+message HealthCheckRequest {
+  string service = 1;
+}
+
+// HealthCheckResponse is the response for health check
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+}
+
+// Member represents a family member linked to an OIDC identity
+message Member {
+  string id = 1;
+  string oidc_subject = 2;
+  string display_name = 3;
+}
+
+// GetMemberBySubjectRequest retrieves a member by OIDC subject
+message GetMemberBySubjectRequest {
+  string oidc_subject = 1;
+}
+
+// CreateMemberRequest creates a new member linked to an OIDC identity
+message CreateMemberRequest {
+  string oidc_subject = 1;
+  string display_name = 2;
+}
+
+// FamilyService manages family members
+service FamilyService {
+  // HealthCheck checks if the service is healthy
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  // GetMemberBySubject retrieves a member by OIDC subject
+  rpc GetMemberBySubject(GetMemberBySubjectRequest) returns (Member);
+
+  // CreateMember creates a new member
+  rpc CreateMember(CreateMemberRequest) returns (Member);
+}
