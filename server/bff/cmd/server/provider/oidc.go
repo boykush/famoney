@@ -107,7 +107,7 @@ func (v *OIDCVerifier) ensureMember(ctx context.Context, idToken *oidc.IDToken) 
 	// Extract display name from token claims
 	var claims struct {
 		Name              string `json:"name"`
-		PreferredUsername  string `json:"preferred_username"`
+		PreferredUsername string `json:"preferred_username"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		log.Printf("failed to parse token claims: %v", err)
