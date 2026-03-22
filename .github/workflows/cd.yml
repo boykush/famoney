@@ -19,6 +19,7 @@ jobs:
     outputs:
       bff: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.bff }}
       expense: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.expense }}
+      family: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.family }}
       web: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.web }}
       sha_short: ${{ steps.sha.outputs.short }}
     steps:
@@ -32,6 +33,8 @@ jobs:
               - 'server/bff/**'
             expense:
               - 'server/expense/**'
+            family:
+              - 'server/family/**'
             web:
               - 'web/**'
 
@@ -57,6 +60,14 @@ jobs:
             context: server/expense
             dockerfile: server/expense/Dockerfile.migrate
             changed: ${{ needs.changes.outputs.expense }}
+          - service: family-service
+            context: server/family
+            dockerfile: server/family/Dockerfile
+            changed: ${{ needs.changes.outputs.family }}
+          - service: family-migration
+            context: server/family
+            dockerfile: server/family/Dockerfile.migrate
+            changed: ${{ needs.changes.outputs.family }}
           - service: web-service
             context: web
             dockerfile: web/Dockerfile
@@ -109,6 +120,13 @@ jobs:
           cd k8s/base/workloads/expense
           kustomize edit set image expense-service=ghcr.io/${{ github.repository }}/expense-service:${{ needs.changes.outputs.sha_short }}
           kustomize edit set image expense-migration=ghcr.io/${{ github.repository }}/expense-migration:${{ needs.changes.outputs.sha_short }}
+
+      - name: Update Family images
+        if: needs.changes.outputs.family == 'true'
+        run: |
+          cd k8s/base/workloads/family
+          kustomize edit set image family-service=ghcr.io/${{ github.repository }}/family-service:${{ needs.changes.outputs.sha_short }}
+          kustomize edit set image family-migration=ghcr.io/${{ github.repository }}/family-migration:${{ needs.changes.outputs.sha_short }}
 
       - name: Update Web image
         if: needs.changes.outputs.web == 'true'
