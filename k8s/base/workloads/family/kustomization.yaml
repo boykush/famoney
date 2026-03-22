@@ -10,7 +10,7 @@ resources:
 images:
 - name: family-migration
   newName: ghcr.io/boykush/famoney/family-migration
-  newTag: latest
+  newTag: ed6669c
 - name: family-service
   newName: ghcr.io/boykush/famoney/family-service
-  newTag: latest
+  newTag: ed6669c
