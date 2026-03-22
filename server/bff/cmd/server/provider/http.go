@@ -38,9 +38,9 @@ func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 
 	// Top-level router: auth endpoints + gRPC-Gateway with OIDC middleware
 	topMux := http.NewServeMux()
-	topMux.HandleFunc("GET /auth/login", authHandler.HandleLogin)
-	topMux.HandleFunc("GET /auth/callback", authHandler.HandleCallback)
-	topMux.Handle("GET /auth/me", oidcVerifier.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	topMux.HandleFunc("GET /api/v1/auth/login", authHandler.HandleLogin)
+	topMux.HandleFunc("GET /api/v1/auth/callback", authHandler.HandleCallback)
+	topMux.Handle("GET /api/v1/auth/me", oidcVerifier.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})))
 	topMux.Handle("/", oidcVerifier.Middleware(mux))

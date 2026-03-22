@@ -12,17 +12,17 @@ export default function Home() {
 	useEffect(() => {
 		const token = localStorage.getItem("access_token");
 		if (!token) {
-			window.location.href = `${API_BASE_URL}/auth/login`;
+			window.location.href = `${API_BASE_URL}/api/v1/auth/login`;
 			return;
 		}
 
-		fetch(`${API_BASE_URL}/auth/me`, {
+		fetch(`${API_BASE_URL}/api/v1/auth/me`, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 			.then((res) => {
 				if (res.status === 401) {
 					localStorage.removeItem("access_token");
-					window.location.href = `${API_BASE_URL}/auth/login`;
+					window.location.href = `${API_BASE_URL}/api/v1/auth/login`;
 					return;
 				}
 				if (!res.ok) {

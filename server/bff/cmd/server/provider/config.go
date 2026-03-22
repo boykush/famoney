@@ -8,6 +8,6 @@ type Config struct {
 	OIDCIssuerURL         string `env:"OIDC_ISSUER_URL" envDefault:"http://keycloak/realms/famoney"`
 	OIDCIssuerExternalURL string `env:"OIDC_ISSUER_EXTERNAL_URL" envDefault:"http://localhost:8888/realms/famoney"`
 	OIDCClientID          string `env:"OIDC_CLIENT_ID" envDefault:"famoney-bff"`
-	AuthCallbackURL       string `env:"AUTH_CALLBACK_URL" envDefault:"http://localhost:8080/auth/callback"`
+	AuthCallbackURL       string `env:"AUTH_CALLBACK_URL" envDefault:"http://localhost:8080/api/v1/auth/callback"`
 	FrontendURL           string `env:"FRONTEND_URL" envDefault:"http://localhost:3000"`
 }
