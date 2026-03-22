@@ -14,6 +14,9 @@ spec:
     helm:
       skipSchemaValidation: true
       values: |
+        image:
+          tag: 1.24.2
+
         autoscaling:
           enabled: false
 
