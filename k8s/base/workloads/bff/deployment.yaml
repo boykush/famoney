@@ -34,5 +34,11 @@ spec:
           value: "family-service:50053"
         - name: OIDC_ISSUER_URL
           value: "http://keycloak/realms/famoney"
+        - name: OIDC_ISSUER_EXTERNAL_URL
+          value: "http://localhost:8180/realms/famoney"
         - name: OIDC_CLIENT_ID
           value: "famoney-bff"
+        - name: AUTH_CALLBACK_URL
+          value: "http://localhost:8080/api/v1/auth/callback"
+        - name: FRONTEND_URL
+          value: "http://localhost:8080"

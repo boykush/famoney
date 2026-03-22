@@ -62,7 +62,7 @@ func (h *AuthHandler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("%s/auth/callback?access_token=%s",
+	redirectURL := fmt.Sprintf("%s/login/callback?access_token=%s",
 		h.frontendURL,
 		url.QueryEscape(token.AccessToken),
 	)
