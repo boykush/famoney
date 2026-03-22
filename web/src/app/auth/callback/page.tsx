@@ -1,9 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
-export default function AuthCallback() {
+function CallbackHandler() {
 	const searchParams = useSearchParams();
 
 	useEffect(() => {
@@ -18,5 +18,19 @@ export default function AuthCallback() {
 		<div className="py-10 text-center">
 			<p className="text-gray-500">Authenticating...</p>
 		</div>
+	);
+}
+
+export default function AuthCallback() {
+	return (
+		<Suspense
+			fallback={
+				<div className="py-10 text-center">
+					<p className="text-gray-500">Loading...</p>
+				</div>
+			}
+		>
+			<CallbackHandler />
+		</Suspense>
 	);
 }
