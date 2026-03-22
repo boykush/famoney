@@ -9,4 +9,4 @@ resources:
 images:
 - name: bff-service
   newName: ghcr.io/boykush/famoney/bff-service
-  newTag: 86cfa34
+  newTag: 02cca64
