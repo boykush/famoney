@@ -19,6 +19,9 @@ spec:
           defaultConfig:
             holdApplicationUntilProxyStarts: true
 
+        sidecarInjectorWebhook:
+          enableNativeSidecars: true
+
         pilot:
           autoscaleEnabled: false
           replicaCount: 1
