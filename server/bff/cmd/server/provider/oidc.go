@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -20,7 +21,8 @@ func ProvideOIDCVerifier(i do.Injector) (*OIDCVerifier, error) {
 
 	provider, err := oidc.NewProvider(context.Background(), cfg.OIDCIssuerURL)
 	if err != nil {
-		return nil, err
+		log.Printf("OIDC provider not available: %v", err)
+		return &OIDCVerifier{}, nil
 	}
 
 	verifier := provider.Verifier(&oidc.Config{
@@ -36,6 +38,11 @@ func (v *OIDCVerifier) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/health") {
 			next.ServeHTTP(w, r)
+			return
+		}
+
+		if v.verifier == nil {
+			http.Error(w, "authentication service unavailable", http.StatusServiceUnavailable)
 			return
 		}
 
