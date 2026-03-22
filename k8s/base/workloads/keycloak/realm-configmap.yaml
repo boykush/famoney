@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm-config
+data:
+  famoney-realm.json: |
+    {
+      "realm": "famoney",
+      "enabled": true,
+      "clients": [
+        {
+          "clientId": "famoney-bff",
+          "enabled": true,
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "directAccessGrantsEnabled": true,
+          "redirectUris": ["*"],
+          "webOrigins": ["*"]
+        }
+      ]
+    }

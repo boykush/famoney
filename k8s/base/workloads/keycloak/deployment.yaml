@@ -23,6 +23,11 @@ spec:
         image: quay.io/keycloak/keycloak:26.1.4
         args:
         - start-dev
+        - --import-realm
+        volumeMounts:
+        - name: realm-config
+          mountPath: /opt/keycloak/data/import
+          readOnly: true
         ports:
         - containerPort: 8080
           name: http
@@ -55,3 +60,7 @@ spec:
             secretKeyRef:
               name: keycloak-admin-secret
               key: password
+      volumes:
+      - name: realm-config
+        configMap:
+          name: keycloak-realm-config
