@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Port forward to Keycloak Admin Console"
+
+set -e
+
+pkill -f "kubectl port-forward.*keycloak" 2>/dev/null || true
+
+kubectl port-forward svc/keycloak 8180:8080 &>/dev/null &
+
+PASSWORD=$(kubectl get secret keycloak-admin-secret -o jsonpath='{.data.password}' | base64 -d)
+
+echo "Keycloak: http://localhost:8180"
+echo "User:     admin"
+echo "Password: $PASSWORD"
