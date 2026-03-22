@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Generate ent code for family"
+#MISE dir="server/family"
+
+go generate ./internal/infra/ent

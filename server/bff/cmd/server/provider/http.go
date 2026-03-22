@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	expensepb "github.com/boykush/famoney/server/bff/gen/go/expense"
+	familypb "github.com/boykush/famoney/server/bff/gen/go/family"
 )
 
 // ProvideHTTPServer creates and starts an HTTP server with gRPC-Gateway handlers.
@@ -28,6 +29,10 @@ func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 
 	if err := expensepb.RegisterExpenseServiceHandlerFromEndpoint(ctx, mux, cfg.ExpenseServiceAddr, opts); err != nil {
 		return nil, fmt.Errorf("failed to register expense service handler: %w", err)
+	}
+
+	if err := familypb.RegisterFamilyServiceHandlerFromEndpoint(ctx, mux, cfg.FamilyServiceAddr, opts); err != nil {
+		return nil, fmt.Errorf("failed to register family service handler: %w", err)
 	}
 
 	httpServer := &http.Server{

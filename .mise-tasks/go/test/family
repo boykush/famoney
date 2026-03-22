@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run tests for family service"
+#MISE dir="server/family"
+go test ./...

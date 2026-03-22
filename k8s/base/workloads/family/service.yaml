@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: family-service
+  labels:
+    app: family-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 50053
+    targetPort: 50053
+    protocol: TCP
+    name: grpc
+  selector:
+    app: family-service

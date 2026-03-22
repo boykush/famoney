@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - bff
   - expense
+  - family
   - web
   - keycloak
   - istio

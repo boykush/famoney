@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build family service"
+#MISE depends=["proto:generate:family"]
+#MISE dir="server/family"
+go build -o bin/server ./cmd/server

@@ -1,0 +1,27 @@
+name: Family CI
+
+on:
+  pull_request:
+    paths:
+      - 'server/family/**'
+      - '.github/workflows/family-ci.yml'
+      - '.github/actions/go-ci/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/family/**'
+      - '.github/workflows/family-ci.yml'
+      - '.github/actions/go-ci/**'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Go CI
+        uses: ./.github/actions/go-ci
+        with:
+          service: family

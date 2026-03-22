@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Lint family service code"
+#MISE dir="server/family"
+golangci-lint run ./...
