@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - cluster.yaml
   - databases.yaml
+  - peerauthentication.yaml
   - secret.yaml
