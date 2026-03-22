@@ -2,6 +2,9 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: expense-db
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   name: expense_db
   owner: famoney
@@ -12,6 +15,9 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: family-db
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   name: family_db
   owner: famoney
@@ -22,6 +28,9 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: keycloak-db
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   name: keycloak_db
   owner: famoney
