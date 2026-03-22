@@ -11,6 +11,10 @@ spec:
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.37
+        command: ['sh', '-c', 'until nc -z postgres-rw 5432; do echo "waiting for postgres..."; sleep 2; done']
       containers:
       - name: migrate
         image: expense-migration:latest
