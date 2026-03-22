@@ -1,43 +1,69 @@
-import { checkHealth } from "./lib/api";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-	const results = await Promise.all([
-		checkHealth("Expense Service", "/api/v1/expense/health"),
-	]);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-	return (
-		<div className="py-10">
-			<div className="text-center mb-10">
-				<h1 className="text-3xl font-bold mb-2">Famoney</h1>
-				<p className="text-gray-600">Service Health Status</p>
+export default function Home() {
+	const [authenticated, setAuthenticated] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const token = localStorage.getItem("access_token");
+		if (!token) {
+			window.location.href = `${API_BASE_URL}/auth/login`;
+			return;
+		}
+
+		fetch(`${API_BASE_URL}/auth/me`, {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then((res) => {
+				if (res.status === 401) {
+					localStorage.removeItem("access_token");
+					window.location.href = `${API_BASE_URL}/auth/login`;
+					return;
+				}
+				if (!res.ok) {
+					throw new Error(`HTTP ${res.status}`);
+				}
+				setAuthenticated(true);
+			})
+			.catch((e) => {
+				setError(e instanceof Error ? e.message : "Unknown error");
+			})
+			.finally(() => {
+				setLoading(false);
+			});
+	}, []);
+
+	if (loading) {
+		return (
+			<div className="py-10 text-center">
+				<p className="text-gray-500">Loading...</p>
 			</div>
+		);
+	}
 
-			<div className="grid gap-4 max-w-2xl mx-auto">
-				{results.map((result) => (
-					<div
-						key={result.service}
-						className="bg-white rounded-lg border border-gray-200 p-5 flex items-center justify-between"
-					>
-						<div>
-							<h2 className="font-semibold text-lg">{result.service}</h2>
-							<p className="text-sm text-gray-500 font-mono">
-								{result.endpoint}
-							</p>
-						</div>
-						<span
-							className={`px-3 py-1 rounded-full text-sm font-medium ${
-								result.ok
-									? "bg-green-100 text-green-800"
-									: "bg-red-100 text-red-800"
-							}`}
-						>
-							{result.status}
-						</span>
-					</div>
-				))}
+	if (error) {
+		return (
+			<div className="py-10 text-center">
+				<p className="text-red-600">Error: {error}</p>
 			</div>
-		</div>
-	);
+		);
+	}
+
+	if (authenticated) {
+		return (
+			<div className="py-10">
+				<div className="text-center mb-10">
+					<h1 className="text-3xl font-bold mb-2">Famoney</h1>
+					<p className="text-gray-600">Authenticated</p>
+				</div>
+			</div>
+		);
+	}
+
+	return null;
 }

@@ -21,6 +21,7 @@ import (
 func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 	cfg := do.MustInvoke[Config](i)
 	oidcVerifier := do.MustInvoke[*OIDCVerifier](i)
+	authHandler := do.MustInvoke[*AuthHandler](i)
 
 	ctx := context.Background()
 
@@ -35,9 +36,18 @@ func ProvideHTTPServer(i do.Injector) (*http.Server, error) {
 		return nil, fmt.Errorf("failed to register family service handler: %w", err)
 	}
 
+	// Top-level router: auth endpoints + gRPC-Gateway with OIDC middleware
+	topMux := http.NewServeMux()
+	topMux.HandleFunc("GET /auth/login", authHandler.HandleLogin)
+	topMux.HandleFunc("GET /auth/callback", authHandler.HandleCallback)
+	topMux.Handle("GET /auth/me", oidcVerifier.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})))
+	topMux.Handle("/", oidcVerifier.Middleware(mux))
+
 	httpServer := &http.Server{
 		Addr:              fmt.Sprintf(":%s", cfg.HTTPPort),
-		Handler:           oidcVerifier.Middleware(mux),
+		Handler:           topMux,
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
