@@ -9,13 +9,13 @@ on:
       - 'web/**'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  packages: write
+permissions: {}
 
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       bff: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.bff }}
       expense: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.expense }}
@@ -23,9 +23,11 @@ jobs:
       web: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.web }}
       sha_short: ${{ steps.sha.outputs.short }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@d1c1ffe0248fe513906c8e24db8ea791d46f8590 # v3.0.3
         id: filter
         with:
           filters: |
@@ -45,6 +47,9 @@ jobs:
   build-and-push:
     needs: changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         include:
@@ -74,23 +79,25 @@ jobs:
             changed: ${{ needs.changes.outputs.web }}
     steps:
       - if: matrix.changed == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
 
       - if: matrix.changed == 'true'
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
 
       - if: matrix.changed == 'true'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - if: matrix.changed == 'true'
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - if: matrix.changed == 'true'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
@@ -103,36 +110,44 @@ jobs:
   update-manifests:
     needs: [changes, build-and-push]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      REGISTRY: ghcr.io/${{ github.repository }}
+      TAG: ${{ needs.changes.outputs.sha_short }}
     steps:
-      - uses: actions/checkout@v4
+      # Credentials must persist: the final step pushes manifest changes back.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true
 
-      - uses: imranismail/setup-kustomize@v2
+      - uses: imranismail/setup-kustomize@2ba527d4d055ab63514ba50a99456fc35684947f # v2.1.0
 
       - name: Update BFF image
         if: needs.changes.outputs.bff == 'true'
         run: |
           cd k8s/base/workloads/bff
-          kustomize edit set image bff-service=ghcr.io/${{ github.repository }}/bff-service:${{ needs.changes.outputs.sha_short }}
+          kustomize edit set image "bff-service=${REGISTRY}/bff-service:${TAG}"
 
       - name: Update Expense images
         if: needs.changes.outputs.expense == 'true'
         run: |
           cd k8s/base/workloads/expense
-          kustomize edit set image expense-service=ghcr.io/${{ github.repository }}/expense-service:${{ needs.changes.outputs.sha_short }}
-          kustomize edit set image expense-migration=ghcr.io/${{ github.repository }}/expense-migration:${{ needs.changes.outputs.sha_short }}
+          kustomize edit set image "expense-service=${REGISTRY}/expense-service:${TAG}"
+          kustomize edit set image "expense-migration=${REGISTRY}/expense-migration:${TAG}"
 
       - name: Update Family images
         if: needs.changes.outputs.family == 'true'
         run: |
           cd k8s/base/workloads/family
-          kustomize edit set image family-service=ghcr.io/${{ github.repository }}/family-service:${{ needs.changes.outputs.sha_short }}
-          kustomize edit set image family-migration=ghcr.io/${{ github.repository }}/family-migration:${{ needs.changes.outputs.sha_short }}
+          kustomize edit set image "family-service=${REGISTRY}/family-service:${TAG}"
+          kustomize edit set image "family-migration=${REGISTRY}/family-migration:${TAG}"
 
       - name: Update Web image
         if: needs.changes.outputs.web == 'true'
         run: |
           cd k8s/base/workloads/web
-          kustomize edit set image web-service=ghcr.io/${{ github.repository }}/web-service:${{ needs.changes.outputs.sha_short }}
+          kustomize edit set image "web-service=${REGISTRY}/web-service:${TAG}"
 
       - name: Commit and push manifest changes
         run: |

@@ -10,23 +10,29 @@ runs:
   using: composite
   steps:
     - name: Setup mise
-      uses: jdx/mise-action@v2
+      uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
 
     - name: Run Go fmt check
       shell: bash
+      env:
+        SERVICE: ${{ inputs.service }}
       run: |
-        mise run go:fmt:${{ inputs.service }}
+        mise run "go:fmt:${SERVICE}"
         # Check if there are any changes after formatting
         if [ -n "$(git status --porcelain)" ]; then
-          echo "Error: Code is not formatted. Please run 'mise run go:fmt:${{ inputs.service }}'"
+          echo "Error: Code is not formatted. Please run 'mise run go:fmt:${SERVICE}'"
           git diff
           exit 1
         fi
 
     - name: Run Go lint
       shell: bash
-      run: mise run go:lint:${{ inputs.service }}
+      env:
+        SERVICE: ${{ inputs.service }}
+      run: mise run "go:lint:${SERVICE}"
 
     - name: Run Go tests
       shell: bash
-      run: mise run go:test:${{ inputs.service }}
+      env:
+        SERVICE: ${{ inputs.service }}
+      run: mise run "go:test:${SERVICE}"
