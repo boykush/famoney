@@ -28,6 +28,6 @@ jobs:
           persist-credentials: false
 
       - name: Run Go CI
-        uses: ./.github/actions/go-ci
+        uses: $/.github/actions/go-ci
         with:
           service: expense
