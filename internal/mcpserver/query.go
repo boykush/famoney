@@ -95,11 +95,13 @@ func (s *Store) Summary(ctx context.Context, month string) (*Summary, error) {
 	sum := &Summary{MonthTotal: MonthTotal{Month: month}, Categories: []CategoryTotal{}}
 	for rows.Next() {
 		if err := rows.Scan(&sum.Income, &sum.Expense, &sum.Balance, &sum.Count); err != nil {
-			rows.Close()
+			_ = rows.Close()
 			return nil, err
 		}
 	}
-	rows.Close()
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
 	if sum.Count == 0 {
 		return nil, nil
 	}

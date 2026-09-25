@@ -104,7 +104,8 @@ func runIngest(ctx context.Context, args []string) error {
 	if err != nil {
 		return err
 	}
-	slog.Info("ingested", "month", m.String(), "path", dst)
+	// path は設定（FAMONEY_LAKE_ROOT）から作ったもので、外部入力ではない。
+	slog.Info("ingested", "month", m.String(), "path", dst) //nolint:gosec // G706: see above
 	return nil
 }
 
@@ -123,7 +124,8 @@ func runTransform(ctx context.Context, args []string) error {
 	if err != nil {
 		return err
 	}
-	slog.Info("transformed", "month", m.String(), "rows", n, "path", dst)
+	// path は設定（FAMONEY_LAKE_ROOT）から作ったもので、外部入力ではない。
+	slog.Info("transformed", "month", m.String(), "rows", n, "path", dst) //nolint:gosec // G706: see above
 	return nil
 }
 

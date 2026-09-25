@@ -71,7 +71,8 @@ func (c *Client) DownloadCSV(ctx context.Context, m month.Month) ([]byte, error)
 	req.Header.Set("Cookie", c.Cookie)
 	req.Header.Set("User-Agent", "famoney (+https://github.com/boykush/famoney)")
 
-	resp, err := c.HTTP.Do(req)
+	// 宛先は BaseURL（既定はマネーフォワード ME 固定。差し替えるのはテストだけ）。
+	resp, err := c.HTTP.Do(req) //nolint:gosec // G704: see above
 	if err != nil {
 		return nil, fmt.Errorf("download csv: %w", err)
 	}

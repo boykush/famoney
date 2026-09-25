@@ -14,3 +14,8 @@ linters:
   exclusions:
     presets:
       - std-error-handling
+    rules:
+      # テストは httptest のサーバーを叩き、レスポンスの Close を投げっぱなしにする。
+      - path: _test\.go
+        linters:
+          - gosec
