@@ -174,6 +174,7 @@ func openLake(ctx context.Context) (*lake.Lake, error) {
 		S3: lake.S3Config{
 			Endpoint:        os.Getenv("FAMONEY_S3_ENDPOINT"),
 			Region:          os.Getenv("FAMONEY_S3_REGION"),
+			URLStyle:        os.Getenv("FAMONEY_S3_URL_STYLE"),
 			AccessKeyID:     os.Getenv("FAMONEY_S3_ACCESS_KEY_ID"),
 			SecretAccessKey: os.Getenv("FAMONEY_S3_SECRET_ACCESS_KEY"),
 		},
