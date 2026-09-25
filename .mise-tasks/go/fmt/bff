@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Format bff service code"
-#MISE dir="server/bff"
-go fmt ./...

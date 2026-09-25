@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Install web dependencies"
-#MISE dir="web"
-pnpm install --frozen-lockfile

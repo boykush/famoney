@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Lint bff service code"
-#MISE dir="server/bff"
-golangci-lint run ./...

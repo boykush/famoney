@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run go mod tidy for bff service"
-#MISE dir="server/bff"
-go mod tidy

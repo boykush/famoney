@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Tidy family service dependencies"
-#MISE dir="server/family"
-go mod tidy
