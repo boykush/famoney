@@ -1,13 +1,11 @@
 # Build artifacts
 bin/
-server/*/server
 
 # mise local configuration (contains secrets)
 .mise.local.toml
 
-# Node.js
-node_modules/
-.next/
+# local data lake (mise run ingest / transform)
+.data/
 
 # apm install unpacks dependencies here; the files it generates (.mcp.json etc.) are committed
 apm_modules/

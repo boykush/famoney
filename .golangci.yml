@@ -3,5 +3,14 @@ version: "2"
 linters:
   default: standard
   enable:
-    - govet
     - gosec
+  settings:
+    gosec:
+      excludes:
+        # DuckDB の COPY の宛先や read_parquet のパスはパラメータで渡せないので SQL に埋め込む。
+        # 埋め込むのは設定から作ったパスを lake.Quote したものだけで、tool の入力はすべて ? で渡す。
+        - G201
+        - G202
+  exclusions:
+    presets:
+      - std-error-handling
