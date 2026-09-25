@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Delete kind cluster for local development"
-
-kind delete cluster --name famoney

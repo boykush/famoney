@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run web linter"
-#MISE dir="web"
-pnpm run lint

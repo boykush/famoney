@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Generate proto code for bff service"
-#MISE dir="server/bff"
-buf generate

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Stop all port-forwards"
-
-pkill -f "kubectl port-forward.*bff" 2>/dev/null
-pkill -f "kubectl port-forward.*web" 2>/dev/null
-
-echo "Port-forwards stopped"

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Generate ent code for all services"
-#MISE depends=["ent:generate:expense", "ent:generate:family"]

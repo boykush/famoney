@@ -1,15 +1,58 @@
 [tools]
 go = "1.25.5"
 golangci-lint = "2.10.1"
-buf = "1.61.0"
-kind = "0.26.0"
-kubectl = "1.32.0"
-pnpm = "10.29.3"
-hurl = "7.1.0"
-atlas = "1.0.0"
 hk = "1.36.0"
 pkl = "0.30.2"
-"go:github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway" = "v2.24.0"
 
 [hooks]
-postinstall = "env -u MISE_TOOL_VERSION mise run web:install && hk install --mise"
+postinstall = "hk install --mise"
+
+# CI（.github/workflows/ci.yml）と共有する検査。まとめて走らせるのは `mise run check`。
+[tasks.fmt]
+description = "Check gofmt formatting (fix: gofmt -s -w cmd internal)"
+run = '''
+files=$(gofmt -s -l $(git ls-files '*.go'))
+if [ -n "$files" ]; then
+  echo "Needs formatting (run: gofmt -s -w cmd internal):"
+  echo "$files"
+  exit 1
+fi
+'''
+
+[tasks.vet]
+description = "Run go vet"
+run = "go vet ./..."
+
+[tasks.lint]
+description = "Run golangci-lint"
+run = "golangci-lint run"
+
+[tasks.tidy]
+description = "Check go.mod/go.sum are tidy (fix: go mod tidy)"
+run = "go mod tidy -diff"
+
+[tasks.test]
+description = "Run tests"
+run = "go test ./..."
+
+[tasks.build]
+description = "Build famoney into bin/"
+run = "go build -o bin/famoney ./cmd/famoney"
+
+[tasks.check]
+description = "Run all CI checks"
+depends = ["fmt", "vet", "lint", "tidy", "test"]
+
+# 手元のパイプライン。データレイクは .data/ に置く（FAMONEY_LAKE_ROOT で変えられる）。
+# マネーフォワードの Cookie は .mise.local.toml の [env] に MONEYFORWARD_COOKIE で置く。
+[tasks.ingest]
+description = "Ingest the Money Forward ME CSV of a month (usage: mise run ingest -- --month 2026-09)"
+run = 'FAMONEY_LAKE_ROOT="${FAMONEY_LAKE_ROOT:-{{config_root}}/.data}" go run ./cmd/famoney ingest'
+
+[tasks.transform]
+description = "Transform the raw CSV of a month (usage: mise run transform -- --month 2026-09)"
+run = 'FAMONEY_LAKE_ROOT="${FAMONEY_LAKE_ROOT:-{{config_root}}/.data}" go run ./cmd/famoney transform'
+
+[tasks.mcp]
+description = "Serve the MCP server on 127.0.0.1:8080 (bearer token: FAMONEY_MCP_TOKENS, default 'local')"
+run = 'FAMONEY_LAKE_ROOT="${FAMONEY_LAKE_ROOT:-{{config_root}}/.data}" FAMONEY_MCP_TOKENS="${FAMONEY_MCP_TOKENS:-local}" go run ./cmd/famoney mcp --addr 127.0.0.1:8080'

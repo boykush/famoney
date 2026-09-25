@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run API tests with hurl against server services"
-#MISE depends=["go:build"]
-set -euo pipefail
-
-cd "$(git rev-parse --show-toplevel)/server/test"
-go test -v -timeout 300s -count=1

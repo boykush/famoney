@@ -1,0 +1,6 @@
+# allowlist: image に入ってよいのはアプリのソースだけ。
+*
+!cmd
+!internal
+!go.mod
+!go.sum
