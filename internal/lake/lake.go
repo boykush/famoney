@@ -19,7 +19,7 @@ import (
 
 	"github.com/duckdb/duckdb-go/v2"
 
-	"github.com/boykush/famoney/internal/month"
+	"github.com/boykush/finlake/internal/month"
 )
 
 // Config はデータレイクへの接続設定。

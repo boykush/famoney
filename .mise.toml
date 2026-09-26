@@ -36,23 +36,23 @@ description = "Run tests"
 run = "go test ./..."
 
 [tasks.build]
-description = "Build famoney into bin/"
-run = "go build -o bin/famoney ./cmd/famoney"
+description = "Build finlake into bin/"
+run = "go build -o bin/finlake ./cmd/finlake"
 
 [tasks.check]
 description = "Run all CI checks"
 depends = ["fmt", "vet", "lint", "tidy", "test"]
 
-# 手元のパイプライン。データレイクは .data/ に置く（FAMONEY_LAKE_ROOT で変えられる）。
+# 手元のパイプライン。データレイクは .data/ に置く（FINLAKE_LAKE_ROOT で変えられる）。
 # マネーフォワードの Cookie は .mise.local.toml の [env] に MONEYFORWARD_COOKIE で置く。
 [tasks.ingest]
 description = "Ingest the Money Forward ME CSV of a month (usage: mise run ingest -- --month 2026-09)"
-run = 'FAMONEY_LAKE_ROOT="${FAMONEY_LAKE_ROOT:-{{config_root}}/.data}" go run ./cmd/famoney ingest'
+run = 'FINLAKE_LAKE_ROOT="${FINLAKE_LAKE_ROOT:-{{config_root}}/.data}" go run ./cmd/finlake ingest'
 
 [tasks.transform]
 description = "Transform the raw CSV of a month (usage: mise run transform -- --month 2026-09)"
-run = 'FAMONEY_LAKE_ROOT="${FAMONEY_LAKE_ROOT:-{{config_root}}/.data}" go run ./cmd/famoney transform'
+run = 'FINLAKE_LAKE_ROOT="${FINLAKE_LAKE_ROOT:-{{config_root}}/.data}" go run ./cmd/finlake transform'
 
 [tasks.mcp]
-description = "Serve the MCP server on 127.0.0.1:8080 (bearer token: FAMONEY_MCP_TOKENS, default 'local')"
-run = 'FAMONEY_LAKE_ROOT="${FAMONEY_LAKE_ROOT:-{{config_root}}/.data}" FAMONEY_MCP_TOKENS="${FAMONEY_MCP_TOKENS:-local}" go run ./cmd/famoney mcp --addr 127.0.0.1:8080'
+description = "Serve the MCP server on 127.0.0.1:8080 (bearer token: FINLAKE_MCP_TOKENS, default 'local')"
+run = 'FINLAKE_LAKE_ROOT="${FINLAKE_LAKE_ROOT:-{{config_root}}/.data}" FINLAKE_MCP_TOKENS="${FINLAKE_MCP_TOKENS:-local}" go run ./cmd/finlake mcp --addr 127.0.0.1:8080'

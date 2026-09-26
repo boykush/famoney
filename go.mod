@@ -1,4 +1,4 @@
-module github.com/boykush/famoney
+module github.com/boykush/finlake
 
 go 1.24.0
 
