@@ -1,4 +1,4 @@
-# famoney のイメージを GHCR に push する。デプロイ先（Job / CronJob / Deployment）と
+# finlake のイメージを GHCR に push する。デプロイ先（Job / CronJob / Deployment）と
 # digest の追従は boykush/infrastructure-as-code が持ち、この repo はイメージを出すところまで。
 name: Image
 
@@ -37,7 +37,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE: ghcr.io/boykush/famoney
+  IMAGE: ghcr.io/boykush/finlake
 
 jobs:
   image:
@@ -86,13 +86,13 @@ jobs:
         env:
           TAG: ${{ steps.meta.outputs.tag }}
         run: |
-          trap 'docker rm --force famoney >/dev/null 2>&1 || true' EXIT
+          trap 'docker rm --force finlake >/dev/null 2>&1 || true' EXIT
           wait_healthy() {
             for _ in $(seq 1 30); do
               if curl -fsS http://127.0.0.1:8080/healthz >/dev/null; then return 0; fi
               sleep 1
             done
-            docker logs famoney >&2 || true
+            docker logs finlake >&2 || true
             return 1
           }
           mcp() {
@@ -103,10 +103,10 @@ jobs:
               -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
           }
 
-          docker run --rm --detach --name famoney -p 8080:8080 \
-            -e FAMONEY_LAKE_ROOT=s3://famoney-smoke-test \
-            -e FAMONEY_S3_ENDPOINT=example.invalid \
-            -e FAMONEY_MCP_TOKENS=smoke \
+          docker run --rm --detach --name finlake -p 8080:8080 \
+            -e FINLAKE_LAKE_ROOT=s3://finlake-smoke-test \
+            -e FINLAKE_S3_ENDPOINT=example.invalid \
+            -e FINLAKE_MCP_TOKENS=smoke \
             "${IMAGE}:${TAG}"
           wait_healthy || { echo "did not start with the s3 root (httpfs)" >&2; exit 1; }
 
