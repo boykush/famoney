@@ -13,13 +13,13 @@ API サーバーとフロントエンドは、必要になった時点で produc
 
 ## 構成
 
-1つの Go バイナリ（= 1つのイメージ）をサブコマンドで使い分ける。
+1つの Go バイナリをサブコマンドで使い分ける。
 
-| サブコマンド | 役割 | 動かし方（iac 側） |
-| --- | --- | --- |
-| `finlake ingest --month <月>` | マネーフォワード ME から対象月の CSV を取得し、raw 層へ置く | CronJob / Job |
-| `finlake transform --month <月>` | raw 層の CSV を product の明細（Parquet）に変換する | CronJob / Job |
-| `finlake mcp --addr <host:port>` | product の明細を MCP（Streamable HTTP、`/mcp`）で配る | Deployment |
+| サブコマンド | 役割 |
+| --- | --- |
+| `finlake ingest --month <月>` | マネーフォワード ME から対象月の CSV を取得し、raw 層へ置く |
+| `finlake transform --month <月>` | raw 層の CSV を product の明細（Parquet）に変換する |
+| `finlake mcp --addr <host:port>` | product の明細を MCP（Streamable HTTP、`/mcp`）で配る |
 
 `<月>` は `YYYY-MM`・`current`（既定）・`previous`。`current` / `previous` は JST で数える。同じ月を
 流し直すと上書きするので、月の途中で何度流してもよい。
@@ -77,29 +77,39 @@ product の明細の列:
 | `FINLAKE_S3_REGION` | すべて（s3 のとき） | R2 なら `auto` |
 | `FINLAKE_S3_URL_STYLE` | すべて（s3 のとき） | `vhost`（既定）か `path`。R2 は `path` |
 | `FINLAKE_S3_ACCESS_KEY_ID` / `FINLAKE_S3_SECRET_ACCESS_KEY` | すべて（s3 のとき） | R2 の API トークンのアクセスキー（secret） |
-| `MONEYFORWARD_COOKIE` | `ingest` | ログイン済みブラウザの Cookie ヘッダ（secret） |
+| `MONEYFORWARD_COOKIE` | `ingest` | `_moneybook_session=<値>`（secret。取り方は「取り込み」） |
 | `FINLAKE_MCP_TOKENS` | `mcp` | 受け付ける Bearer トークン。カンマ区切りで複数（入れ替え用）（secret） |
 | `FINLAKE_DUCKDB_EXTENSION_DIRECTORY` | すべて | DuckDB 拡張の置き場。イメージが設定済みなので普段は触らない |
 
-### マネーフォワード ME の Cookie
+## 取り込み
 
-マネーフォワード ME には公開 API が無いので、ブラウザと同じ CSV ダウンロード（`/cf/csv`）をログイン済みの
-Cookie で叩いている。CSV のダウンロードはプレミアム会員の機能。
+取り込み（`ingest` → `transform`）は手元から R2 に向けて流す。マネーフォワード ME の Cookie は手元の
+ブラウザでしか取れないので、クラスタを経由させない。
 
-Cookie はブラウザの開発者ツールで `moneyforward.com` へのリクエストの `Cookie` ヘッダを写す。セッションが
-切れると `ingest` は `moneyforward session expired` で失敗するので、そのときに入れ替える。
+```bash
+mise run pull previous    # 前月分
+```
+
+前月分は、遅れて入る明細（カードの確定、銀行の同期）を待って、月初から数日おいて流す。
+
+`pull` が読む Cookie と R2 の接続情報は `.mise.local.toml` の `[env]` に置く（値の形は「環境変数」の表）。
+
+- **Cookie**: 開発者ツールの Application → Cookies → `https://moneyforward.com` から `_moneybook_session` の
+  値を写す。HttpOnly なので `document.cookie` には出ない。セッションが切れると `ingest` が
+  `moneyforward session expired` で落ちるので、そのときに入れ替える
+- **R2**: ダッシュボードの R2 → Manage API tokens で、権限 Object Read & Write、対象をバケット `finlake` だけに
+  絞って作る。クラスタの `mcp` に渡すトークンとは分ける
 
 ## デプロイ
 
-この repo が出すのは `ghcr.io/boykush/finlake` のイメージまで（`.github/workflows/image.yml`。main で
-`<commit 7桁>` と `main` の2つのタグを push）。k8s のマニフェスト・Secret・公開ホスト名・digest の追従は
+この repo が出すのは `ghcr.io/boykush/finlake` のイメージまで（`.github/workflows/image.yml`）。クラスタで
+動かすのは `mcp` だけで、k8s のマニフェスト・Secret・公開ホスト名・digest の追従は
 [boykush/infrastructure-as-code](https://github.com/boykush/infrastructure-as-code) が持つ。
 
 iac 側で要るもの:
 
-- `ingest` → `transform` を順に流す CronJob（例: 毎日、`--month current`。月初に `--month previous` も）
 - `mcp` の Deployment / Service（port 8080、probe は `/healthz`）と、Cloudflare Tunnel のホスト名
-- Secret: R2 のアクセスキー、`MONEYFORWARD_COOKIE`、`FINLAKE_MCP_TOKENS`
+- Secret: R2 のアクセスキーと `FINLAKE_MCP_TOKENS`。`mcp` は読むだけなので、R2 のトークンは Object Read で足りる
 
 利用側（life）は `.mcp.json` でヘッダにトークンを渡す。値は環境変数から展開させ、repo には書かない。
 
