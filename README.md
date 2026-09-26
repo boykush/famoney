@@ -6,7 +6,7 @@
 ```
 マネーフォワード ME ──(ingest)──▶ raw 層 ──(transform)──▶ product 層 ──(mcp)──▶ life のエージェント
                      CSV(Shift_JIS)    CSV(UTF-8)          Parquet          Bearer 認証
-                                  └──── DigitalOcean Spaces（DuckDB httpfs で読み書き）────┘
+                                  └──── Cloudflare R2（DuckDB httpfs で読み書き）────┘
 ```
 
 API サーバーとフロントエンドは、必要になった時点で product 層の上に足す。
@@ -35,7 +35,7 @@ internal/mcpserver/     MCP サーバー（tool と Bearer 認証）
 
 ### データレイク
 
-ルート（`FAMONEY_LAKE_ROOT`）は `s3://<bucket>[/prefix]`（DigitalOcean Spaces）かローカルのディレクトリ。
+ルート（`FAMONEY_LAKE_ROOT`）は `s3://<bucket>[/prefix]`（S3 互換。本番は Cloudflare R2）かローカルのディレクトリ。
 どちらも同じ配置になる。
 
 ```
@@ -73,9 +73,10 @@ product の明細の列:
 | 変数 | 使うサブコマンド | 中身 |
 | --- | --- | --- |
 | `FAMONEY_LAKE_ROOT` | すべて | データレイクのルート（`s3://famoney` など） |
-| `FAMONEY_S3_ENDPOINT` | すべて（s3 のとき） | 例: `sgp1.digitaloceanspaces.com` |
-| `FAMONEY_S3_REGION` | すべて（s3 のとき） | 例: `sgp1` |
-| `FAMONEY_S3_ACCESS_KEY_ID` / `FAMONEY_S3_SECRET_ACCESS_KEY` | すべて（s3 のとき） | Spaces のアクセスキー（secret） |
+| `FAMONEY_S3_ENDPOINT` | すべて（s3 のとき） | R2 なら `<account_id>.r2.cloudflarestorage.com` |
+| `FAMONEY_S3_REGION` | すべて（s3 のとき） | R2 なら `auto` |
+| `FAMONEY_S3_URL_STYLE` | すべて（s3 のとき） | `vhost`（既定）か `path`。R2 は `path` |
+| `FAMONEY_S3_ACCESS_KEY_ID` / `FAMONEY_S3_SECRET_ACCESS_KEY` | すべて（s3 のとき） | R2 の API トークンのアクセスキー（secret） |
 | `MONEYFORWARD_COOKIE` | `ingest` | ログイン済みブラウザの Cookie ヘッダ（secret） |
 | `FAMONEY_MCP_TOKENS` | `mcp` | 受け付ける Bearer トークン。カンマ区切りで複数（入れ替え用）（secret） |
 | `FAMONEY_DUCKDB_EXTENSION_DIRECTORY` | すべて | DuckDB 拡張の置き場。イメージが設定済みなので普段は触らない |
@@ -98,7 +99,7 @@ iac 側で要るもの:
 
 - `ingest` → `transform` を順に流す CronJob（例: 毎日、`--month current`。月初に `--month previous` も）
 - `mcp` の Deployment / Service（port 8080、probe は `/healthz`）と、Cloudflare Tunnel のホスト名
-- Secret: Spaces のアクセスキー、`MONEYFORWARD_COOKIE`、`FAMONEY_MCP_TOKENS`
+- Secret: R2 のアクセスキー、`MONEYFORWARD_COOKIE`、`FAMONEY_MCP_TOKENS`
 
 利用側（life）は `.mcp.json` でヘッダにトークンを渡す。値は環境変数から展開させ、repo には書かない。
 
